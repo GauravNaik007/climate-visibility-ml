@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Climate Visibility Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="card header-card">
+        <h1>🌫 Climate Visibility Prediction</h1>
+        <p>AI-powered fog risk assessment for farmers</p>
+    </div>
+
+    <!-- INPUT SECTION -->
+    <div class="card">
+        <h2>📍 Select Location & Time</h2>
+
+        <label>Choose Location:</label>
+
+        <input type="text" id="manualLocation" placeholder="Enter village / city / region">
+
+        <button class="btn secondary" onclick="getLocation()">📍 Use GPS</button>
+
+        <p id="location" class="info-text"></p>
+
+        <label>Time Window:</label>
+        <select id="timeWindow">
+            <option value="Current">Current Conditions</option>
+            <option value="Next 3 Hours">Next 3 Hours</option>
+            <option value="Next 6 Hours">Next 6 Hours</option>
+            <option value="Next Morning">Next Morning</option>
+        </select>
+
+        <button class="btn primary" onclick="predict()">🔮 Get Prediction</button>
+    </div>
+
+    <!-- RESULT -->
+    <div class="card result-card">
+        <h2>📊 Result</h2>
+        <div id="result">
+            <p class="muted">Prediction will appear here</p>
+        </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="card">
+        <h2>ℹ️ How It Works</h2>
+
+        <div class="steps">
+            <div class="step">
+                <span>📍</span>
+                <h4>Select Location</h4>
+                <p>Choose your farm location using GPS or manual input.</p>
+            </div>
+
+            <div class="step">
+                <span>🌦</span>
+                <h4>Real Weather Data</h4>
+                <p>System fetches live and forecast weather data.</p>
+            </div>
+
+            <div class="step">
+                <span>🧠</span>
+                <h4>AI Prediction</h4>
+                <p>ML model predicts visibility using climate factors.</p>
+            </div>
+
+            <div class="step">
+                <span>✅</span>
+                <h4>Decision Support</h4>
+                <p>Get clear advisory for farm operations.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        © 2025 Climate Visibility Prediction System <br>
+        Built with Python & Machine Learning
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
