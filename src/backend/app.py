@@ -1,5 +1,5 @@
 # app.py
-# Flask backend for climate visibility prediction
+# Flask backend for climate visibility prediction (Inference Only)
 
 from flask import Flask, request, jsonify, render_template
 import joblib
@@ -8,8 +8,6 @@ from datetime import datetime
 
 from src.backend.weather_service import get_weather_data
 from src.backend.risk_logic import get_risk_and_advisory
-from src.ml.train_model import train_and_save_model
-   # ✅ auto-train import
 
 # Create Flask app
 app = Flask(__name__)
@@ -21,25 +19,24 @@ BASE_PATH = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 app.template_folder = os.path.join(BASE_PATH, "src", "frontend", "templates")
 app.static_folder = os.path.join(BASE_PATH, "src", "frontend", "static")
 
-# Model path
+# Model path (pre-trained, inference only)
 MODEL_PATH = os.path.join(BASE_PATH, "models", "visibility_model.pkl")
 
-# ✅ Load or train model automatically
+# Load pre-trained model
 if not os.path.exists(MODEL_PATH):
-    print("Model not found. Training model on server...")
-    model = train_and_save_model()
-else:
-    model = joblib.load(MODEL_PATH)
-    print("Model loaded successfully.")
+    raise RuntimeError(
+        "Pre-trained model not found. Train the model locally and place it in /models."
+    )
+
+model = joblib.load(MODEL_PATH)
+print("Model loaded successfully (inference mode).")
 
 
-# Home route (UI)
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
-# Prediction API
 @app.route("/predict", methods=["POST"])
 def predict_visibility():
     data = request.json
@@ -49,23 +46,20 @@ def predict_visibility():
     lon = data.get("longitude")
     location_name = data.get("location_name")
 
-    # Build query for weather API
+    # Build query
     if location_name:
         query = f"{location_name}, India"
         coordinates = "Manual location"
     else:
         query = f"{lat},{lon}"
-        coordinates = f"Lat {round(lat, 4)}, Lon {round(lon, 4)}"
+        coordinates = f"Lat {round(lat,4)}, Lon {round(lon,4)}"
 
-    # Fetch live weather data
+    # Fetch live weather
     weather = get_weather_data(query, time_window)
-
     if weather is None:
-        return jsonify({
-            "error": "Unable to fetch weather data for the given location"
-        }), 400
+        return jsonify({"error": "Weather data unavailable"}), 400
 
-    # Prepare ML input
+    # ML input
     X = [[
         weather["temperature"],
         weather["humidity"],
@@ -73,14 +67,10 @@ def predict_visibility():
         weather["rainfall"]
     ]]
 
-    # Predict visibility
     predicted_visibility = round(float(model.predict(X)[0]), 2)
-
-    # Risk & advisory
     risk, advisory = get_risk_and_advisory(predicted_visibility)
 
-    # Final response
-    response = {
+    return jsonify({
         "location": f"{weather['city']}, {weather['region']}, {weather['country']}",
         "coordinates": coordinates,
         "prediction_time": time_window,
@@ -88,12 +78,9 @@ def predict_visibility():
         "predicted_visibility_km": predicted_visibility,
         "risk_level": risk,
         "advisory": advisory
-    }
-
-    return jsonify(response)
+    })
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
