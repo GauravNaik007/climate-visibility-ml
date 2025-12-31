@@ -1,5 +1,6 @@
-# Climate Visibility Prediction Using Machine Learning  
-*(Agricultural Decision Support System)*
+# Climate Visibility Prediction Using Machine Learning
+
+_(Agricultural Decision Support System)_
 
 ---
 
@@ -24,6 +25,7 @@ Farmers often rely on personal experience or general weather reports to judge
 visibility conditions. These methods may not always be accurate or location-specific.
 
 There is a need for a system that:
+
 - Uses real-time climate data
 - Predicts visibility quantitatively (in kilometers)
 - Provides clear, actionable advice
@@ -61,30 +63,32 @@ the risk level.
 
 ## 5. Technology Stack
 
-- **Programming Language:** Python  
-- **Backend:** Flask  
-- **Machine Learning:** Scikit-learn (Random Forest Regressor)  
-- **Data Processing:** Pandas  
-- **Frontend:** HTML, CSS, JavaScript  
-- **API:** Live Weather API  
+- **Programming Language:** Python
+- **Backend:** Flask
+- **Machine Learning:** Scikit-learn (Random Forest Regressor)
+- **Data Processing:** Pandas
+- **Frontend:** HTML, CSS, JavaScript
+- **API:** Live Weather API
 
 ---
 
 ## 6. Machine Learning Approach
 
-- **Algorithm Used:** Random Forest Regressor  
+- **Algorithm Used:** Random Forest Regressor
 - **Reason for Selection:**
   - Handles non-linear relationships well
   - Robust to noise
   - Easy to explain compared to deep learning models
 
 ### Input Features:
+
 - Temperature
 - Humidity
 - Wind Speed
 - Rainfall
 
 ### Output:
+
 - Predicted Visibility (km)
 - Risk Level (SAFE / MODERATE / HIGH)
 - Advisory Message
@@ -97,6 +101,7 @@ The model is trained using a historical climate dataset stored in CSV format.
 The dataset contains multiple climate-related parameters collected over time.
 
 Only relevant columns are used for training:
+
 - Temperature
 - Humidity
 - Wind Speed
@@ -115,7 +120,6 @@ follows standard industry practice.
 
 Once trained, the model is saved as:
 models/visibility_model.pkl
-
 
 This trained model is then used for real-time prediction.
 
@@ -157,23 +161,25 @@ git clone https://github.com/GauravNaik007/climate-visibility-ml.git
 cd climate-visibility-ml
 
 ### Step 2: Install Dependencies
+
 pip install -r requirements.txt
 
 ### Step 3: Train the Model
+
 python src/ml/train_model.py
 
 This will generate:
 models/visibility_model.pkl
 
 ### Step 4: Run the Application
+
 python -m src.backend.app
 
-
 ### Step 5: Open in Browser
+
 http://127.0.0.1:5000
 
 The application can also be accessed on mobile devices connected to the same network.
-
 
 ### 12. Project Status
 
@@ -190,4 +196,3 @@ The project focuses on simplicity, explainability, and practical usability for f
 ### 14. Author
 
 Gaurav Naik
-
