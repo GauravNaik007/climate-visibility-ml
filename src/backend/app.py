@@ -4,10 +4,12 @@
 from flask import Flask, request, jsonify, render_template
 import joblib
 import os
-from datetime import datetime   # ✅ FIX 1: import added
+from datetime import datetime
 
-from weather_service import get_weather_data
-from risk_logic import get_risk_and_advisory
+from src.backend.weather_service import get_weather_data
+from src.backend.risk_logic import get_risk_and_advisory
+from src.ml.train_model import train_and_save_model
+   # ✅ auto-train import
 
 # Create Flask app
 app = Flask(__name__)
@@ -19,9 +21,16 @@ BASE_PATH = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 app.template_folder = os.path.join(BASE_PATH, "src", "frontend", "templates")
 app.static_folder = os.path.join(BASE_PATH, "src", "frontend", "static")
 
-# Load trained ML model
+# Model path
 MODEL_PATH = os.path.join(BASE_PATH, "models", "visibility_model.pkl")
-model = joblib.load(MODEL_PATH)
+
+# ✅ Load or train model automatically
+if not os.path.exists(MODEL_PATH):
+    print("Model not found. Training model on server...")
+    model = train_and_save_model()
+else:
+    model = joblib.load(MODEL_PATH)
+    print("Model loaded successfully.")
 
 
 # Home route (UI)
@@ -48,7 +57,7 @@ def predict_visibility():
         query = f"{lat},{lon}"
         coordinates = f"Lat {round(lat, 4)}, Lon {round(lon, 4)}"
 
-    # Fetch weather data based on selected time window
+    # Fetch live weather data
     weather = get_weather_data(query, time_window)
 
     if weather is None:
@@ -67,7 +76,7 @@ def predict_visibility():
     # Predict visibility
     predicted_visibility = round(float(model.predict(X)[0]), 2)
 
-    # Risk level and advisory
+    # Risk & advisory
     risk, advisory = get_risk_and_advisory(predicted_visibility)
 
     # Final response
@@ -85,5 +94,5 @@ def predict_visibility():
 
 
 if __name__ == "__main__":
-    # ✅ FIX 2: allow mobile devices on same network
+    # Allow access on local network & Render
     app.run(host="0.0.0.0", port=5000, debug=True)
